@@ -4,6 +4,7 @@ var path    = require('path');
 var fs      = require('fs');
 var vucoin  = require('vucoin');
 var program = require('commander');
+var config  = require(__dirname + '/tools/config')(__dirname + '/conf/config.json');
 
 program
   .option('-p, --port <port>', 'Local port to listen', parseInt)
@@ -12,9 +13,6 @@ program
   .option('-P, --ucport <port>', 'Port of ucoin server')
   .option('-a, --auth', 'Enables authenticated mode')
   .parse(process.argv);
-
-var confFile = __dirname + '/conf/config.json';
-var config = fs.existsSync(confFile) ? JSON.parse(fs.readFileSync(confFile, 'utf8')) : {};
 
 var host     = program.uchost || config.uchost || 'localhost';
 var port     = program.ucport || config.ucport || 8081;
@@ -49,8 +47,8 @@ vucoin(host, port, auth, function (err, node) {
   var contract     = require('./routes/contract')(node, auth);
   var transactions = require('./routes/transactions')(node, auth);
   var peers        = require('./routes/peers')(node, auth);
-  
-  app.get('/home', routes.home);
+
+  app.get('/home',                          routes.home);
   app.get('/community/members',             members.members);
   app.get('/community/voters',              members.voters);
   app.get('/community/pks/lookup',          pks.lookup);

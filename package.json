@@ -8,7 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "./node_modules/mocha/bin/_mocha test/runner.js"
   },
   "repository": {
     "type": "git",
@@ -34,9 +35,9 @@
     "sha1": "*"
   },
   "devDependencies": {
-    "mocha": "",
-    "should": "",
+    "mocha": "^1.21.4",
     "sha1": "",
+    "should": "",
     "supertest": ""
   }
 }
