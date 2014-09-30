@@ -6,16 +6,18 @@ var hdc      = require('hdc');
 var contract = require('../tools/contract');
 
 module.exports = function (node, auth) {
-  
+
   this.lasts = function(req, res){
     async.waterfall([
       function (next){
-        node.hdc.amendments.current(function (err, am) {
-          if(am){
-            contract.getStack(am, node, next);
-          }
-          else next(null, []);
-        });
+        if (node) {
+          node.hdc.amendments.current(function (err, am) {
+            if(am){
+              contract.getStack(am, node, next);
+            }
+            else next(null, []);
+          });
+        }
       },
       function (amendments, next){
         node.hdc.transactions.lasts(100, next);

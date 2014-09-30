@@ -7,11 +7,11 @@ var util     = require('util');
 var contract = require('../tools/contract');
 
 module.exports = function (node, auth) {
-  
+
   this.members = function(req, res){
     new MemberResponse(node, auth).process(res);
   };
-  
+
   this.voters = function(req, res){
     new VoterResponse(node, auth).process(res);
   };
@@ -59,13 +59,17 @@ function MemberResponse (node, auth){
 
     async.waterfall([
       function (next){
-        that.node.hdc.amendments.current(function (err, am) {
-          if(am){
-            that.updateStatus(status, am);
-            contract.getStack(am, that.node, next);
-          }
-          else next(null, []);
-        });
+        if(that.node) {
+          that.node.hdc.amendments.current(function (err, am) {
+            if(am){
+              that.updateStatus(status, am);
+              contract.getStack(am, that.node, next);
+            }
+            else next(null, []);
+          });
+        } else {
+          next(null, []);
+        }
       },
       function (ams, next){
         var members = {};
@@ -118,7 +122,7 @@ function MemberResponse (node, auth){
 
 }
 
-function VoterResponse (node, auth){  
+function VoterResponse (node, auth){
   MemberResponse.call(this, node, auth);
 
   this.getNew = function (am) {

@@ -5,18 +5,22 @@ var _     = require('underscore');
 var hdc   = require('hdc');
 
 module.exports = function (node, auth) {
-  
+
   this.knownPeers = function(req, res){
     async.waterfall([
       function (next){
-        node.network.peering.peers.get({ leaves: true }, next);
+        if(node) {
+          node.network.peering.peers.get({ leaves: true }, next);
+        }
       },
       function (merkle, next) {
         var peers = [];
         async.forEach(merkle.leaves, function(fingerprint, callback){
           async.waterfall([
             function (next){
-              node.network.peering.peers.get({ leaf: fingerprint }, next);
+              if (node) {
+                node.network.peering.peers.get({ leaf: fingerprint }, next);
+              }
             },
             function(json, next){
               var peer = (json.leaf && json.leaf.value) || {};
@@ -42,7 +46,7 @@ module.exports = function (node, auth) {
       });
     });
   };
-  
+
   this.managedKeys = function(req, res){
     async.waterfall([
       function (next){
@@ -64,11 +68,13 @@ module.exports = function (node, auth) {
       });
     });
   };
-  
+
   this.wallets = function(req, res){
     async.waterfall([
       function (next){
-        node.network.wallet.get({ leaves: true}, next);
+        if (node) {
+          node.network.wallet.get({ leaves: true}, next);
+        }
       },
       function (merkle, next) {
         var wallets = [];
@@ -99,11 +105,13 @@ module.exports = function (node, auth) {
       });
     });
   };
-  
+
   this.upstreamALL = function(req, res){
     async.waterfall([
       function (next){
-        node.network.peering.peers.upstream.get(next);
+        if (node) {
+          node.network.peering.peers.upstream.get(next);
+        }
       },
       fingerprintsToPeers
     ], function (err, peers) {
@@ -119,11 +127,13 @@ module.exports = function (node, auth) {
       });
     });
   };
-  
+
   this.upstreamKEYS = function(req, res){
     async.waterfall([
       function (next){
-        node.network.peering.keys({ leaves: true }, next);
+        if(node) {
+          node.network.peering.keys({ leaves: true }, next);
+        }
       },
       function (merkle, next) {
         var keys = {};
@@ -160,11 +170,13 @@ module.exports = function (node, auth) {
       });
     });
   };
-  
+
   this.downstreamALL = function(req, res){
     async.waterfall([
       function (next){
-        node.network.peering.peers.downstream.get(next);
+        if(node) {
+          node.network.peering.peers.downstream.get(next);
+        }
       },
       fingerprintsToPeers
     ], function (err, peers) {
@@ -181,11 +193,13 @@ module.exports = function (node, auth) {
       });
     });
   };
-  
+
   this.downstreamKEYS = function(req, res){
     async.waterfall([
       function (next){
-        node.network.peering.keys({ leaves: true }, next);
+        if(node) {
+          node.network.peering.keys({ leaves: true }, next);
+        }
       },
       function (merkle, next) {
         var keys = {};
@@ -228,7 +242,9 @@ module.exports = function (node, auth) {
     async.forEach(json.peers, function(hash, callback){
       async.waterfall([
         function(next){
-          node.network.peering.peers.get({ leaf: hash }, next);
+          if(node) {
+            node.network.peering.peers.get({ leaf: hash }, next);
+          }
         },
         function (merkle, next){
           peers.push(merkle.leaf.value);

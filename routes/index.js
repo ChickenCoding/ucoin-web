@@ -4,7 +4,7 @@ var hdc   = require('hdc');
 var contract = require('../tools/contract')
 
 module.exports = function (node, auth) {
-  
+
   this.home = function(req, res){
     var data = {
       membersActualizing: 0,
@@ -15,7 +15,9 @@ module.exports = function (node, auth) {
     };
     async.waterfall([
       function (next){
-        node.network.peering.get(next);
+        if (node) {
+          node.network.peering.get(next);
+        }
       },
       function (json, next){
         data["currency"] = json.currency;
